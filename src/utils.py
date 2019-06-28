@@ -64,12 +64,27 @@ def padding_chars_to_max(pairs):
             pair[1] = pair[1] + "P" * (max_mesra_len - len(pair[1]))
     return temp, max_mesra_len
 
-def get_input_output_tensor(pairs, seq_len):
-    pass
+def get_input_output_tensor(pairs, seq_len, char_dict):
+    pairs_num = len(pairs)
+    input_tensor = torch.zeros([pairs_num, seq_len], dtype=torch.int32)
+    output_tensor = torch.zeros([pairs_num, seq_len], dtype=torch.int32)
+    for i in range(len(input_tensor)):
+        mesra_avval = pairs[i][0]
+        for j,v in enumerate(mesra_avval):
+            input_tensor[i][j] = char_dict[v]
+        mesra_dovvom = pairs[i][1]
+        for j, v in enumerate(mesra_dovvom):
+            output_tensor[i][j] = char_dict[v]
+    return input_tensor, output_tensor
 
-def get_one_hot_input_tensor(input_tensor):
-    pass
-
+def get_one_hot_input_tensor(input_tensor, dict_size):
+    it_shape = input_tensor.shape
+    one_hot_tensor = torch.zeros([it_shape[0], it_shape[1], dict_size])
+    for i in range(it_shape[0]):
+        for j in range(it_shape[1]):
+            active_place = input_tensor[i][j]
+            one_hot_tensor[i][j][active_place] = 1
+    return one_hot_tensor
 
 
 ghazals = load_dataset("./data/mesras.json")
@@ -83,3 +98,5 @@ print(char_dict['ع'])
 print(len(char_list))
 temp, max_mesra_len = padding_chars_to_max(pairs)
 print(max_mesra_len)
+input_tensor, output_tensor = get_input_output_tensor(pairs, 43, char_dict)
+input_one_hot_tensor = get_one_hot_input_tensor(input_tensor, len(char_dict))
