@@ -2,6 +2,9 @@ import json
 import random
 import os.path
 import torch
+from torch.utils.data import Dataset, DataLoader
+import pickle
+import numpy as np
 
 def load_dataset(file_addr):
     with open(file_addr, "r") as read_file:
@@ -86,6 +89,28 @@ def get_one_hot_input_tensor(input_tensor, dict_size):
             one_hot_tensor[i][j][active_place] = 1
     return one_hot_tensor
 
+def convert_to_pickle(item, directory):
+    pickle.dump(item, open(directory,"wb"))
+
+def load_from_pickle(directory):
+    return pickle.load(open(directory,"rb"))
+
+
+class MyDataSet(Dataset):
+    def __init__(self, X, y):
+        self.data = X
+        self.target = y
+        self.length = [torch.sum(1 - np.equal(x, 0)) for x in X]
+
+
+    def __getitem__(self, index):
+        x = self.data[index]
+        y = self.target[index]
+        x_len = self.length[index]
+        return x, y, x_len
+
+    def __len__(self):
+        return len(self.data)
 
 ghazals = load_dataset("./data/mesras.json")
 pairs = (make_pairs(ghazals))
@@ -100,3 +125,8 @@ temp, max_mesra_len = padding_chars_to_max(pairs)
 print(max_mesra_len)
 input_tensor, output_tensor = get_input_output_tensor(pairs, 43, char_dict)
 input_one_hot_tensor = get_one_hot_input_tensor(input_tensor, len(char_dict))
+
+train_dataset = MyDataSet(input_one_hot_tensor, output_tensor)
+train_dataloader = DataLoader(train_dataset, batch_size=64, drop_last=True, shuffle=True)
+for (x_batch, y_batch, x_len_batch) in train_dataloader:
+    print(x_batch)
