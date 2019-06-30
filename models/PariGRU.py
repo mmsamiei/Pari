@@ -24,6 +24,32 @@ class PariGRUEncoder(nn.Module):
         output, self.hidden = self.gru(temp, self.hidden)
         print(self.hidden.shape)
 
+class PariGRUDecoder(nn.Module):
+    def __init__(self, hidden_dim, emb_dim, vocab_dim):
+        super(PariGRUDecoder, self).__init__()
+        self.hidden_dim = hidden_dim
+        self.emb_dim = emb_dim
+        self.vocab_dim = vocab_dim
+    # layers
+        self.embedding = nn.Embedding(vocab_dim, emb_dim)
+        self.gru = nn.LSTM(emb_dim, hidden_dim, dropout=0.5)
+        self.fc = nn.Linear(hidden_dim, vocab_dim)
+
+    def forward(self, input, hidden):
+        temp = input #input = [batch size]
+        temp = temp.unsqueeze(0) #temp = [1, batch size]
+        print(temp.shape)
+        temp = self.embedding(temp)
+        print(temp.shape)
+        output, hidden = self.gru(temp, hidden)
+        # output = [sent len, batch size, hid dim * n directions]
+        # hidden = [n layers, batch size, hid dim]
+        prediction = self.fc(output.squeeze(0))
+        return prediction, hidden
+
+
+
+
 vocab_size = 30
 embedding_dim = 10
 hidden_units = 200
@@ -37,3 +63,10 @@ x = torch.ones([seq_len, batch_sz, vocab_size])
 dev = torch.device("cpu")
 model.initialize_hidden_state(dev)
 temp = model(x, seq_len, dev)
+
+model2 = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
+y = torch.LongTensor(batch_sz).random_(0, vocab_size)
+print(y)
+print(y.shape)
+z = model2(y, temp)[1]
+print(z)
