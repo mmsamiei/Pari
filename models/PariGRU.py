@@ -9,7 +9,7 @@ class PariGRUEncoder(nn.Module):
         self.batch_sz = batch_sz
         self.output_size = output_size
     # layers
-        self.embedding = nn.Linear(self.vocab_size, self.embedding_dim)
+        self.embedding = nn.Embedding(self.vocab_size, self.embedding_dim)
         self.dropout = nn.Dropout(p=0.5)
         self.gru = nn.GRU(self.embedding_dim, self.hidden_units)
         self.fc = nn.Linear(self.hidden_units, self.output_size)
@@ -59,7 +59,8 @@ output_size = 15
 seq_len = 40
 
 model = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz, output_size)
-x = torch.ones([seq_len, batch_sz, vocab_size])
+x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
+print(x.shape)
 dev = torch.device("cpu")
 model.initialize_hidden_state(dev)
 temp = model(x, seq_len, dev)

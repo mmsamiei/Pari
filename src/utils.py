@@ -130,3 +130,4 @@ train_dataset = MyDataSet(input_one_hot_tensor, output_tensor)
 train_dataloader = DataLoader(train_dataset, batch_size=64, drop_last=True, shuffle=True)
 for (x_batch, y_batch, x_len_batch) in train_dataloader:
     print(x_batch)
+
