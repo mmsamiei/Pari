@@ -124,9 +124,9 @@ print(len(char_list))
 temp, max_mesra_len = padding_chars_to_max(pairs)
 print(max_mesra_len)
 input_tensor, output_tensor = get_input_output_tensor(pairs, 43, char_dict)
-input_one_hot_tensor = get_one_hot_input_tensor(input_tensor, len(char_dict))
+#input_one_hot_tensor = get_one_hot_input_tensor(input_tensor, len(char_dict))
 
-train_dataset = MyDataSet(input_one_hot_tensor, output_tensor)
+train_dataset = MyDataSet(input_tensor, output_tensor)
 train_dataloader = DataLoader(train_dataset, batch_size=64, drop_last=True, shuffle=True)
 for (x_batch, y_batch, x_len_batch) in train_dataloader:
     print(x_batch)
