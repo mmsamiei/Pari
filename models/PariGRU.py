@@ -57,7 +57,7 @@ class PariSeq2Seq(nn.Module):
         # trg = [trg sent len, batch size]
         batch_size = trg.shape[1]
         max_len = trg.shape[0]
-        trg_vocab_dim = self.decoder.vocab_dim
+        trg_vocab_dim = self.decoder.vocab_size
         # tensor to store decoder outputs
         outputs = torch.zeros(max_len, batch_sz, trg_vocab_dim).to(self.device)
         hidden = self.encoder(src, max_len, self.device)
@@ -87,14 +87,8 @@ seq_len = 40
 
 dev = torch.device("cpu")
 encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
-test = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
-hidden = encoder(test, seq_len, dev)
-
 decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
-y = torch.LongTensor(batch_sz).random_(0, vocab_size)
-decoder(y, hidden)
-
-# seq2seq = PariSeq2Seq(encoder, decoder, dev)
-# x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
-# y = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
-# seq2seq(x, y)
+seq2seq = PariSeq2Seq(encoder, decoder, dev)
+x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
+y = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
+res = seq2seq(x, y)
