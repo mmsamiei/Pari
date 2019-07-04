@@ -1,6 +1,6 @@
 from models.PariGRU import *
 from src.utils import *
-
+from trainer.trainer import *
 batch_sz = 64
 
 ghazals = load_dataset("./data/mesras.json")
@@ -22,9 +22,16 @@ encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
 decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
 seq2seq = PariSeq2Seq(encoder, decoder, dev)
 
+trainer = Trainer(seq2seq, train_dataloader, char_dict['P'])
+trainer.init_weights()
+trainer.count_parameters()
+trainer.train(100)
 
-for (x_batch, y_batch, x_len_batch) in train_dataloader:
-    x_batch_last = x_batch.permute(1,0)
-    y_batch_last = x_batch.permute(1, 0)
-    res = seq2seq(x_batch_last, y_batch_last)
-    print(res.shape)
+
+
+
+# for (x_batch, y_batch, x_len_batch) in train_dataloader:
+#     x_batch_last = x_batch.permute(1,0)
+#     y_batch_last = x_batch.permute(1, 0)
+#     res = seq2seq(x_batch_last, y_batch_last)
+#     print(res.shape)
