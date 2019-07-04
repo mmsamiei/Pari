@@ -1,9 +1,11 @@
 from torch import nn
+import torch
 from torch import optim
 class Trainer:
-    def __init__(self, model, dataloader, PAD_IDX):
+    def __init__(self, model, dataloader, validation_dataloader, PAD_IDX):
         self.model = model
         self.dataloader = dataloader
+        self.validation_dataloader = validation_dataloader
         self.optimizer = optim.Adam(self.model.parameters())
         self.criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
@@ -37,9 +39,30 @@ class Trainer:
             epoch_loss += loss.item()
         return epoch_loss
 
-    def train(self, epoch):
+    def train(self, N_epoch):
         epoch_losses = []
-        for i in range(epoch):
+        valid_losses = []
+        for i in range(N_epoch):
+
             epoch_loss = self.train_one_epoch()
             epoch_losses.append(epoch_loss)
+            valid_losses.append(self.evaluate())
         print(epoch_losses)
+
+    def evaluate(self):
+        self.model.eval() #This will turn off dropout (and batch normalization)
+        epoch_loss = 0
+        with torch.no_grad():
+            for i, batch in enumerate(self.validation_dataloader):
+                src, trg, _ = batch
+                src = src.permute(1, 0)
+                trg = trg.permute(1, 0)
+                output = self.model(src, trg, 0)
+                trg = trg[1:].contiguous().view(-1)
+                output = output[1:].view(-1, output.shape[-1])
+                loss = self.criterion(output, trg)
+                epoch_loss += loss.item()
+        return  epoch_loss/len(self.validation_dataloader)
+
+
+

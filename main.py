@@ -7,10 +7,18 @@ ghazals = load_dataset("./data/mesras.json")
 pairs = (make_pairs(ghazals))
 train, test = split_train_test(pairs)
 char_dict, char_list = make_charcabulary(train)
-temp, max_mesra_len = padding_chars_to_max(pairs)
+
+pairs, max_mesra_len = padding_chars_to_max(pairs)
+
 input_tensor, output_tensor = get_input_output_tensor(pairs, max_mesra_len, char_dict)
+
+
 train_dataset = MyDataSet(input_tensor, output_tensor)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_sz, drop_last=True, shuffle=True)
+
+validation_dataset = MyDataSet(input_tensor[:100], output_tensor[:100])
+validation_dataloader = DataLoader(train_dataset, batch_size=batch_sz, drop_last=True, shuffle=True)
+
 
 vocab_size = len(char_list)
 embedding_dim = 10
@@ -22,7 +30,7 @@ encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
 decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
 seq2seq = PariSeq2Seq(encoder, decoder, dev)
 
-trainer = Trainer(seq2seq, train_dataloader, char_dict['P'])
+trainer = Trainer(seq2seq, train_dataloader, validation_dataloader, char_dict['P'])
 trainer.init_weights()
 trainer.count_parameters()
 trainer.train(100)
