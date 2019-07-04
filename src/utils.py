@@ -112,22 +112,23 @@ class MyDataSet(Dataset):
     def __len__(self):
         return len(self.data)
 
-ghazals = load_dataset("./data/mesras.json")
-pairs = (make_pairs(ghazals))
-train, test = split_train_test(pairs)
-# vocab_dict, vocab_list = make_vocabulary(train)
-# print(vocab_dict['عشق'])
-# print(vocab_list[100])
-char_dict, char_list = make_charcabulary(train)
-print(char_dict['ع'])
-print(len(char_list))
-temp, max_mesra_len = padding_chars_to_max(pairs)
-print(max_mesra_len)
-input_tensor, output_tensor = get_input_output_tensor(pairs, 43, char_dict)
-#input_one_hot_tensor = get_one_hot_input_tensor(input_tensor, len(char_dict))
+if __name__ == "__main__":
+    ghazals = load_dataset("./data/mesras.json")
+    pairs = (make_pairs(ghazals))
+    train, test = split_train_test(pairs)
+    # vocab_dict, vocab_list = make_vocabulary(train)
+    # print(vocab_dict['عشق'])
+    # print(vocab_list[100])
+    char_dict, char_list = make_charcabulary(train)
+    print(char_dict['ع'])
+    print(len(char_list))
+    temp, max_mesra_len = padding_chars_to_max(pairs)
+    print(max_mesra_len)
+    input_tensor, output_tensor = get_input_output_tensor(pairs, 43, char_dict)
+    #input_one_hot_tensor = get_one_hot_input_tensor(input_tensor, len(char_dict))
 
-train_dataset = MyDataSet(input_tensor, output_tensor)
-train_dataloader = DataLoader(train_dataset, batch_size=64, drop_last=True, shuffle=True)
-for (x_batch, y_batch, x_len_batch) in train_dataloader:
-    print(x_batch)
+    train_dataset = MyDataSet(input_tensor, output_tensor)
+    train_dataloader = DataLoader(train_dataset, batch_size=64, drop_last=True, shuffle=True)
+    for (x_batch, y_batch, x_len_batch) in train_dataloader:
+        print(x_batch)
 

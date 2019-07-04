@@ -70,13 +70,7 @@ class PariSeq2Seq(nn.Module):
             input = (trg[t] if teacher_forcing else top1)
         return outputs
 
-vocab_size = 30
-embedding_dim = 10
-hidden_units = 200
-batch_sz = 32
-output_size = 15
 
-seq_len = 40
 
 # model = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz, output_size)
 # x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
@@ -85,10 +79,17 @@ seq_len = 40
 # model.initialize_hidden_state(dev)
 # temp = model(x, seq_len, dev)
 
-dev = torch.device("cpu")
-encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
-decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
-seq2seq = PariSeq2Seq(encoder, decoder, dev)
-x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
-y = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
-res = seq2seq(x, y)
+if __name__ == "__main__":
+    vocab_size = 30
+    embedding_dim = 10
+    hidden_units = 200
+    batch_sz = 32
+    output_size = 15
+    seq_len = 40
+    dev = torch.device("cpu")
+    encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
+    decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
+    seq2seq = PariSeq2Seq(encoder, decoder, dev)
+    x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
+    y = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
+    res = seq2seq(x, y)
