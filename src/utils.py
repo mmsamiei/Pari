@@ -69,8 +69,10 @@ def padding_chars_to_max(pairs):
 
 def get_input_output_tensor(pairs, seq_len, char_dict):
     pairs_num = len(pairs)
-    input_tensor = torch.zeros([pairs_num, seq_len], dtype=torch.int32)
-    output_tensor = torch.zeros([pairs_num, seq_len], dtype=torch.int32)
+    #input_tensor = torch.zeros([pairs_num, seq_len], dtype=torch.int32)
+    input_tensor = torch.LongTensor(pairs_num, seq_len)
+    #output_tensor = torch.zeros([pairs_num, seq_len], dtype=torch.int32)
+    output_tensor = torch.LongTensor(pairs_num, seq_len)
     for i in range(len(input_tensor)):
         mesra_avval = pairs[i][0]
         for j,v in enumerate(mesra_avval):
