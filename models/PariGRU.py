@@ -46,6 +46,7 @@ class PariGRUDecoder(nn.Module):
 
         return prediction, hidden
 
+
 class PariSeq2Seq(nn.Module):
     def __init__(self, encoder, decoder, device):
         super(PariSeq2Seq, self).__init__()
@@ -70,6 +71,20 @@ class PariSeq2Seq(nn.Module):
             input = (trg[t] if teacher_forcing else top1)
         return outputs
 
+    def generate(self,src):
+        batch_size = src.shape[1]
+        max_len = src.shape[0]
+        trg_vocab_dim = self.decoder.vocab_size
+        # tensor to store decoder outputs
+        outputs = torch.zeros(max_len, batch_size, trg_vocab_dim).to(self.device)
+        hidden = self.encoder(src, max_len, self.device)
+        input = src[0, :]
+        for t in range(1, max_len):
+            output, hidden = self.decoder(input, hidden)
+            outputs[t] = output
+            top1 = output.max(1)[1]
+            input = top1
+        return outputs
 
 
 # model = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz, output_size)

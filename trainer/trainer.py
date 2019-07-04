@@ -1,6 +1,7 @@
 from torch import nn
 import torch
 from torch import optim
+import time
 class Trainer:
     def __init__(self, model, dataloader, validation_dataloader, PAD_IDX):
         self.model = model
@@ -42,11 +43,15 @@ class Trainer:
     def train(self, N_epoch):
         epoch_losses = []
         valid_losses = []
-        for i in range(N_epoch):
-
+        for i_epoch in range(N_epoch):
+            start_time = time.time()
             epoch_loss = self.train_one_epoch()
             epoch_losses.append(epoch_loss)
             valid_losses.append(self.evaluate())
+            end_time = time.time()
+            epoch_mins, epoch_secs = self.epoch_time(start_time, end_time)
+            ## TODO
+
         print(epoch_losses)
 
     def evaluate(self):
@@ -63,6 +68,12 @@ class Trainer:
                 loss = self.criterion(output, trg)
                 epoch_loss += loss.item()
         return  epoch_loss/len(self.validation_dataloader)
+
+    def epoch_time(self, start_time, end_time):
+        elapsed_time = end_time - start_time
+        elapsed_mins = int(elapsed_time / 60)
+        elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
+        return elapsed_mins, elapsed_secs
 
 
 

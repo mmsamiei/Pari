@@ -33,8 +33,19 @@ seq2seq = PariSeq2Seq(encoder, decoder, dev)
 trainer = Trainer(seq2seq, train_dataloader, validation_dataloader, char_dict['P'])
 trainer.init_weights()
 trainer.count_parameters()
-trainer.train(100)
+trainer.train(120)
 
+
+for (x_batch, y_batch, x_len_batch) in train_dataloader:
+     x_batch_last = x_batch.permute(1,0)
+     res = seq2seq.generate(x_batch_last)
+     indices = res.max(2)[1]
+     indices = indices.permute(1,0)
+     for seq in indices:
+         str = ""
+         for item in seq:
+             str = str + char_list[item]
+         print(str)
 
 
 
