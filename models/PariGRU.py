@@ -59,7 +59,7 @@ class PariSeq2Seq(nn.Module):
         max_len = trg.shape[0]
         trg_vocab_dim = self.decoder.vocab_size
         # tensor to store decoder outputs
-        outputs = torch.zeros(max_len, batch_sz, trg_vocab_dim).to(self.device)
+        outputs = torch.zeros(max_len, batch_size, trg_vocab_dim).to(self.device)
         hidden = self.encoder(src, max_len, self.device)
         input = trg[0, :]
         for t in range(1, max_len):
