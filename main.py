@@ -25,15 +25,18 @@ embedding_dim = 10
 hidden_units = 200
 seq_len = max_mesra_len
 
+
 dev = torch.device("cpu")
+dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
 decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
-seq2seq = PariSeq2Seq(encoder, decoder, dev)
+seq2seq = PariSeq2Seq(encoder, decoder, dev).to(dev)
 
-trainer = Trainer(seq2seq, train_dataloader, validation_dataloader, char_dict['P'])
+
+trainer = Trainer(seq2seq, train_dataloader, validation_dataloader, char_dict['P'], dev)
 trainer.init_weights()
 trainer.count_parameters()
-trainer.train(120)
+trainer.train(1)
 
 
 for (x_batch, y_batch, x_len_batch) in train_dataloader:

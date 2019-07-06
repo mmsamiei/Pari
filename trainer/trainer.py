@@ -3,12 +3,13 @@ import torch
 from torch import optim
 import time
 class Trainer:
-    def __init__(self, model, dataloader, validation_dataloader, PAD_IDX):
+    def __init__(self, model, dataloader, validation_dataloader, PAD_IDX, dev):
         self.model = model
         self.dataloader = dataloader
         self.validation_dataloader = validation_dataloader
         self.optimizer = optim.Adam(self.model.parameters())
         self.criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
+        self.dev = dev
 
     def init_weights(self):
         for name, param in self.model.named_parameters():
@@ -23,6 +24,8 @@ class Trainer:
         epoch_loss = 0
         for i, batch in enumerate(self.dataloader):
             src, trg, _ = batch
+            src = src.to(self.dev)
+            trg = trg.to(self.dev)
             self.optimizer.zero_grad()
             src = src.permute(1,0)
             trg = trg.permute(1,0)
@@ -60,6 +63,8 @@ class Trainer:
         with torch.no_grad():
             for i, batch in enumerate(self.validation_dataloader):
                 src, trg, _ = batch
+                src = src.to(self.dev)
+                trg = trg.to(self.dev)
                 src = src.permute(1, 0)
                 trg = trg.permute(1, 0)
                 output = self.model(src, trg, 0)

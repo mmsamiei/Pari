@@ -77,6 +77,7 @@ class PariSeq2Seq(nn.Module):
         trg_vocab_dim = self.decoder.vocab_size
         # tensor to store decoder outputs
         outputs = torch.zeros(max_len, batch_size, trg_vocab_dim).to(self.device)
+        src = src.to(self.device)
         hidden = self.encoder(src, max_len, self.device)
         input = src[0, :]
         for t in range(1, max_len):
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     hidden_units = 200
     batch_sz = 32
     output_size = 15
-    seq_len = 40
+    seq_len = 45
     dev = torch.device("cuda")
     encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
     decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
