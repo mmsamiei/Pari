@@ -101,10 +101,11 @@ if __name__ == "__main__":
     batch_sz = 32
     output_size = 15
     seq_len = 40
-    dev = torch.device("cpu")
+    dev = torch.device("cuda")
     encoder = PariGRUEncoder(vocab_size, embedding_dim, hidden_units, batch_sz)
     decoder = PariGRUDecoder(hidden_units, embedding_dim, vocab_size)
     seq2seq = PariSeq2Seq(encoder, decoder, dev)
-    x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
-    y = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size)
+    seq2seq.to(dev)
+    x = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size).to(dev)
+    y = torch.LongTensor(seq_len, batch_sz).random_(0, vocab_size).to(dev)
     res = seq2seq(x, y)
