@@ -43,7 +43,7 @@ def make_vocabulary(pairs):
     return vocab_dict, vocab_list
 
 def make_charcabulary(pairs):
-    chars = {"$","P"}
+    chars = {"S","E","P"}
     for pair in pairs:
         beyt = pair[0] + pair[1]
         for char in beyt:
@@ -63,8 +63,9 @@ def padding_chars_to_max(pairs):
     max_mesra_len = max([len(item) for item in l])
     temp = pairs
     for i, pair in enumerate(temp):
-            pair[0] = pair[0] + "P" * (max_mesra_len-len(pair[0]))
-            pair[1] = pair[1] + "P" * (max_mesra_len - len(pair[1]))
+            pair[0] = "S" + pair[0] + "E" + "P" * (max_mesra_len-len(pair[0]))
+            pair[1] = "S" + pair[1] + "E" + "P" * (max_mesra_len - len(pair[1]))
+    max_mesra_len = max_mesra_len + 2
     return temp, max_mesra_len
 
 def get_input_output_tensor(pairs, seq_len, char_dict):

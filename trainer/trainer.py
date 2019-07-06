@@ -53,6 +53,7 @@ class Trainer:
             valid_losses.append(self.evaluate())
             end_time = time.time()
             epoch_mins, epoch_secs = self.epoch_time(start_time, end_time)
+            print("epoch {}, loss is {}".format(i_epoch,epoch_loss))
             ## TODO
 
         print(epoch_losses)
