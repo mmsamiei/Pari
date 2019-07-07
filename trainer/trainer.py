@@ -2,6 +2,10 @@ from torch import nn
 import torch
 from torch import optim
 import time
+import os
+import datetime
+
+
 class Trainer:
     def __init__(self, model, dataloader, validation_dataloader, PAD_IDX, dev):
         self.model = model
@@ -43,9 +47,11 @@ class Trainer:
             epoch_loss += loss.item()
         return epoch_loss
 
-    def train(self, N_epoch):
+    def train(self, N_epoch, save_period = 10):
         epoch_losses = []
         valid_losses = []
+        directory_name = datetime.datetime.now().strftime('%Y-%m-%d--%H:%M:%S')
+        os.makedirs('./saved_models/{}'.format(directory_name))
         for i_epoch in range(N_epoch):
             start_time = time.time()
             epoch_loss = self.train_one_epoch()
@@ -54,6 +60,11 @@ class Trainer:
             end_time = time.time()
             epoch_mins, epoch_secs = self.epoch_time(start_time, end_time)
             print("epoch {}, loss is {}".format(i_epoch,epoch_loss))
+            if(i_epoch % save_period == 0):
+                temp_path = os.path.join('.','saved_models')
+                temp_path = os.path.join(temp_path,directory_name)
+                temp_path = os.path.join(temp_path, 'model-{}.pt'.format(i_epoch))
+                torch.save(self.model.state_dict(), temp_path)
             ## TODO
 
         print(epoch_losses)

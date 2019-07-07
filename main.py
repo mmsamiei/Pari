@@ -36,7 +36,7 @@ seq2seq = PariSeq2Seq(encoder, decoder, dev).to(dev)
 trainer = Trainer(seq2seq, train_dataloader, validation_dataloader, char_dict['P'], dev)
 trainer.init_weights()
 trainer.count_parameters()
-trainer.train(100)
+trainer.train(1000)
 
 
 for (x_batch, y_batch, x_len_batch) in train_dataloader:

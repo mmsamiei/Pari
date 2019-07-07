@@ -1,6 +1,8 @@
 from torch import nn
 import torch
 import random
+import time
+
 class PariGRUEncoder(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_units, batch_sz):
         super(PariGRUEncoder, self).__init__()
@@ -82,6 +84,13 @@ class PariSeq2Seq(nn.Module):
         input = src[0, :]
         for t in range(1, max_len):
             output, hidden = self.decoder(input, hidden)
+            ###
+            coin = random.random() < 0.1
+            if coin:
+                top1 = output.max(1)[1]
+                output[:,top1] = float(-999)
+                coin = random.random() < 0.2
+            ###
             outputs[t] = output
             top1 = output.max(1)[1]
             input = top1
